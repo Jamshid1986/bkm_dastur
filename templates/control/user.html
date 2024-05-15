@@ -1,0 +1,188 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Foydalanuvchilar {% endblock title %}
+
+{% block content %}
+    <div class="container-fluid mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Barcha foydalanuvchilar - {{ users | length}}</h5>
+                <button class="btn btn-success" data-bs-target="#modal-C" data-bs-toggle="modal">Qo‘shish</button>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Obyekt/Filial</th>
+                        <th>Foydalanuvchi nomi</th>
+                        <th>Ism va sharifi</th>
+                        <th>Foydalanuvchi maqomi</th>
+                        <th>Oxirgi kirgan vaqti</th>
+                        <th></th>
+                    </tr>   
+                        {% for c in users %}
+                    <tr>
+                        <td>{{c.account.branch}}</td>
+                        <td>{{c.username}}</td>
+                        <td>{{c.first_name}}</td>
+                        <td>
+                          {% if c.last_name == '100' %}
+                          Superadmin
+                          {% elif c.last_name == '200' %}
+                          Reception
+                          {% elif c.last_name == '300' %}
+                          Security
+                          {% elif c.last_name == '400' %}
+                          Viewer
+                          {% endif %}
+                        </td>
+                        <td>{{c.last_login}}</td>
+                        <td>
+                            <button class="btn btn-dark btn-sm" data-bs-target="#modal-P{{c.id}}" data-bs-toggle="modal">pwd</button>
+                            <button class="btn btn-warning btn-sm" data-bs-target="#modal-E{{c.id}}" data-bs-toggle="modal">Tahrirlash</button>
+                            <button data-bs-target="#modal-D{{c.id}}" data-bs-toggle="modal" class="btn btn-danger btn-sm">O‘chirish</button>
+                        </td>
+                    </tr>
+                        {% endfor %}     
+                </table>
+            </div>
+            
+        </div>
+        
+    </div>
+
+
+    <div class="modal" id="modal-C" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_user_create'%}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Yangi foydalanuvchini qo‘shish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Obyekt/Filial</label>
+                    <select name="branch" class="form-select">
+                      {% for b in branches %}
+                      <option value="{{b.id}}">{{b.title}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="">Foydalanuvchi nomi</label>
+                    <input type="text" class="form-control mb-2" required name="username">
+                    <label for="">Ismi va sharifi</label>
+                    <input type="text" class="form-control mb-2" required name="first_name">
+                    <label for="">Foydalanuvchi maqomi</label>
+                    <select name="role" class="form-select mb-2">
+                      <option value="100">Superma'mur</option>
+                      <option value="200">Resepshn</option>
+                      <option value="300">Qo‘riqchi</option>
+                      <option value="400">Kuzatuvchi</option>
+                    </select>
+                    <label for="">Maxfiy kalit so‘z</label>
+                    <input type="text" class="form-control" name="password" minlength="6" required>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Qo‘shish</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      
+    {% for i in users %}  
+        <div class="modal" id="modal-D{{i.id}}" tabindex="-1">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'control_user_delete'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Foydalanuvchini o‘chirish "{{i.first_name}}"</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="{{i.id}}">
+                        <p>Siz haqiqatan ham o‘chirib yubormoqchimisiz? O‘chirib yuborilgan ma'lumotlar qayta tiklanmaydi!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                        <button type="submit" class="btn btn-danger">O‘chirish</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% for i in users %} 
+    <div class="modal" id="modal-E{{i.id}}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_user_edit'%}"  method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Foydalanuvchini tahrirlash {{i.first_name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Obyekt/Filial</label>
+                    <select name="branch" class="form-select">
+                      {% for b in branches %}
+                      <option {% if b.id == i.account.branch.id %} selected {% endif %} value="{{b.id}}">{{b.title}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="">Foydalanuvchi nomi</label>
+                    <label for="">Foydalanuvchi nomi</label>
+                    <input type="text" class="form-control mb-2" required name="username" value="{{i.username}}">
+                    <label for="">Ismi va sharifi</label>
+                    <input type="text" class="form-control mb-2" required name="first_name" value="{{i.first_name}}">
+                    <label for="">Foydalanuvchi maqomi</label>
+                    <select name="role" class="form-select mb-2">
+                      <option {% if i.last_name == '100' %} selected {% endif %} value="100">Superma'mur</option>
+                      <option {% if i.last_name == '200' %} selected {% endif %} value="200">Resepshn</option>
+                      <option {% if i.last_name == '300' %} selected {% endif %} value="300">Qo‘riqchi</option>
+                      <option {% if i.last_name == '400' %} selected {% endif %} value="400">Kuzatuvchi</option>
+                    </select>
+                    <input type="hidden" name="id" value="{{i.id}}">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    {% endfor %}
+
+    {% for i in users %} 
+    <div class="modal" id="modal-P{{i.id}}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_user_edit_pwd'%}"  method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Foydalanuvchi maxfiy kalit so‘zini tahrirlash {{i.first_name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Foydalanuvchining yangi maxfiy kalit so‘zi</label>
+                    <input type="text" class="form-control mb-2" required name="password" minlength="6">
+                  
+                    
+                    <input type="hidden" name="id" value="{{i.id}}">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    {% endfor %}
+
+{% endblock content %}
+

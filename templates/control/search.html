@@ -1,0 +1,135 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Izlash {% endblock title %}
+
+{% block content %}
+
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-body">
+                <form action="{% url 'control_search_go' %}" method="get">
+                    <div class="row">
+                        <div class="col-3">
+                            <input type="date" name="from_date" class="form-control">
+                        </div>
+                        <div class="col-3">
+                            <input type="date" name="to_date" class="form-control">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" name="guest" class="form-control" list="persons_list">
+                            <datalist id="persons_list">
+                                {% for p in persons %}
+                                    <option value="{{p.id}} {{p.title}} {{p.passport}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        <div class="col-3">
+                            <button type="submit" class="btn btn-primary">
+                                Izlash
+                            </button>
+                            <button data-bs-target="#excel" data-bs-toggle="modal" class="btn btn-success" type="button">Excel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card card-body mt-3">
+                {% for s in sessions %}
+                
+                    <div class="alert alert-light" style="position: relative;">
+                        
+                        <p class="lead mb-0">
+                            <b>Kirgan vaqti:</b>
+                            {{s.date_start}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Chiqqan vaqti:</b>
+                            {{s.date_finish}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Eslatma:</b>
+                            {% if s.guest %}
+                            {{s.info.room }}
+                            {% else %}
+                            {{s.person.tools}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Resepshnchi:</b>
+                            {{s.user.first_name}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>F.I.Sh.:</b>
+                            {% if s.guest %}
+                            {{s.info.title }}
+                            {% else %}
+                            {{s.person.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Shirkat:</b>
+                            {% if s.guest %}
+                            {{s.info.company}}
+                            {% else %}
+                            {{s.person.company.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Tashrif joyi:</b>
+                            {% if s.guest %}
+                            {{s.info.room}}
+                            {% else %}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Fuqaroligi:</b>
+                            {% if s.guest %}
+                            {{s.info.citizenship.title}}
+                            {% else %}
+                            {{s.person.country.title}} 
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Pasport:</b>
+                            {% if s.guest %}
+                            {{s.info.passport}}
+                            {% else %}
+                            {{s.person.passport}}
+                            {% endif %}
+                        </p>
+                            <a style="position: absolute; right: 0px; top: 0px; " href="{{s.photo.url}}" target="_blank">
+                                <img src="{{s.photo.url}}" alt="" width="250">
+                            </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="excel" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Excel formatida saqlash</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{% url 'control_to_excel' %}" method="get">
+            <div class="modal-body">
+                <label for="">Boshlanishi</label>
+                <input type="date" class="form-control" name="from_date" required>
+                <label for="">Tugashi</label>
+                <input type="date" class="form-control" name="to_date" required>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Saqlash</button>
+            </div>
+        </form>
+        </div>
+    </div>
+  </div>
+
+{% endblock content %}

@@ -1,0 +1,202 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Personallar {% endblock title %}
+
+{% block content %}
+    <div class="container-fluid mt-5">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Barcha personallar - {{persons|length}}</h5>
+            <input type="text" class="form-control w-25" placeholder="Izlash" id="search">
+              <button class="btn btn-success" data-bs-target="#modal-C" data-bs-toggle="modal">Qo‘shish</button>
+                </div>
+            <div class="card-body">
+              {% if code == 'exists' %}
+              <div class="alert alert-danger">
+                Bunday shaxs allaqachon mavjud!
+              </div>
+              {% endif %}
+                <table class="table table-striped">
+                    <tr>
+                        <td></td>
+                        <th>Ism-sharifi</th>
+                        <th>Dastur raqami</th>
+                        <th>Ish joyi</th>
+                        <th>Pasport ma'lumoti</th>
+                        <th>Fuqaroligi</th>
+                        <th>Anjomlari</th>
+                        <th></th>
+                    </tr>   
+                        {% for p in persons %}
+                    <tr class="tr" data-name="{{p.title}} {{p.company.title}} {{p.passport}}">
+                        <td></td>
+                        <td>{{p.title}}</td>
+                        <td>
+                          {% for d in p.dpl_set.all %}
+                          <a href="{% url 'control_dastur_detail' d.dastur.id %}" class="d-block">{{d.dastur.title}}</a>
+                          {% endfor %}
+                        </td>
+                        <td>{{p.company.title}}</td>
+                        <td>{{p.passport}}</td>
+                        <td>{{p.country.code}}</td>
+                        <td><small>{{p.tools}}</small>
+                          {% for d in p.dpl_set.all %}
+                          <hr>
+                          <small><b>{{d.dastur.title}}-dasturdagi anjomlari: </b>  {{d.dastur.tools}}</small>
+                          {% endfor %}
+                        </td>
+                        <td>
+                            <button class="btn btn-warning btn-sm w-100" data-bs-target="#modal-E{{p.id}}" data-bs-toggle="modal">Tahrirlash</button>
+                            <button data-bs-target="#modal-D{{p.id}}" data-bs-toggle="modal" class="btn btn-danger btn-sm w-100 mt-1">O‘chirish</button>
+                        </td>
+                    </tr>
+                        {% endfor %}     
+                </table>
+              </div>      
+        </div>
+    </div>
+
+    <div class="modal" id="modal-C" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_personal_create'%}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Yangi personal qo‘shish (Shirkat va davlat avval qo‘shilganmi?) </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Ism-sharifi</label>
+                    <input type="text" class="form-control mb-2" required name="title">
+                    <label for="">Ish joyi</label>
+                    <select class="form-select mb-2" name="company">
+                      {% for c in companies %}
+                        <option value="{{c.id}}">{{c.title}}</option>
+                      {% endfor %}
+                    </select>
+                    <label>Pasport/ID raqami</label>
+                    <input type="text" class="form-control mb-2" required name="passport">
+                    <label for="">Davlat kodi</label>
+                    <select class="form-select mb-2" name="country">
+                      {% for c in countries %}
+                        <option value="{{c.id}}">{{c.title}}</option>
+                      {% endfor %}
+                    </select>
+                    <label>Tashrif joyi</label>
+                    <select class="form-select mb-2" name="room">
+                      <option value="A101">A101</option>
+                      <option value="A244">A244</option>
+                    </select>
+                    <!-- <input type="text" class="form-control mb-2" required name="room"> -->
+                    <label for="">Eslatma</label>
+                    <textarea name="tools" id="" rows="3" class="form-control"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Qo‘shish</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    {% for i in persons %}  
+        <div class="modal" id="modal-D{{i.id}}" tabindex="-1">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'control_personal_delete'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Personalni o‘chirish "{{i.title}}"</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="{{i.id}}">
+                        <p>Siz haqiqatan ham o‘chirib yubormoqchimisiz? O‘chirib yuborilgan ma'lumotlar qayta tiklanmaydi!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                        <button type="submit" class="btn btn-danger">O‘chirish</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% for i in persons %} 
+    <div class="modal" id="modal-E{{i.id}}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form action="{% url 'control_personal_edit'%}" method="POST">
+              {% csrf_token %}
+              <div class="modal-header">
+                  <h5 class="modal-title">Personalni tahrirlash</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" name="id" value="{{i.id}}">
+                  <label for="">Ism-sharifi</label>
+                  <input type="text" class="form-control mb-2" required name="title" value="{{i.title}}">
+                  <label for="">Ish joyi</label>
+                  <select class="form-select mb-2" name="company">
+                    {% for c in companies %}
+                      <option {% if i.company.id == c.id %} selected {% endif %} value="{{c.id}}">{{c.title}}</option>
+                    {% endfor %}
+                  </select>
+                  <label>Pasport/ID raqami</label>
+                  <input type="text" class="form-control mb-2" required name="passport" value="{{i.passport}}">
+                  <label for="">Davlat kodi</label>
+                  <select class="form-select mb-2" name="country">
+                    {% for c in countries %}
+                      <option {% if i.country.id == c.id %} selected {% endif %} value="{{c.id}}">{{c.title}}</option>
+                    {% endfor %}
+                  </select>
+                  <label>Tashrif joyi</label>
+                  <select class="form-select mb-2" name="room">
+                    <option {% if i.room == "A101" %} selected {% endif %} value="101">A101</option>
+                    <option {% if i.room == "A244" %} selected {% endif %} value="A244">A244</option>
+                  </select>
+                  <!-- <input type="text" class="form-control mb-2" required name="room" value="{{i.room}}"> -->
+                  <label for="">Eslatma</label>
+                  <textarea name="tools" id="" rows="3" class="form-control">{{i.tools}}</textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                  <button type="submit" class="btn btn-success">Tahrirlash</button>
+                </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <script>
+      function filterRows(inputValue) {
+    if (inputValue.length < 3) {
+        document.querySelectorAll('.tr').forEach(function(row) {
+            row.style.display = '';
+        });
+        return;
+    }
+
+    var lowerInputValue = inputValue.toLowerCase();
+
+    document.querySelectorAll('.tr').forEach(function(row) {
+        // Используем dataset для доступа к data-name
+        var dataName = row.dataset.name;
+
+        if (dataName && dataName.toLowerCase().includes(lowerInputValue)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Пример использования с обработчиком событий для текстового поля
+document.getElementById("search").addEventListener('input', function() {
+    filterRows(this.value);
+});
+    </script>
+{% endblock content %}
+

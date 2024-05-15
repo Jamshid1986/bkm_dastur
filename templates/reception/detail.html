@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <title>Reception</title>
+    <style>
+        .navbar-nav a {
+            border-bottom: 2px solid transparent;
+        }
+        .navbar-nav .current {
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">{{request.user.account.branch.title}}</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link" href="{% url 'login_logout' %}">Chiqish</a>
+            </div>
+          </div>
+        </div>
+    </nav>
+    <div class="mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3>Batafsil ma'lumot</h3>
+                            <a href="{% url 'reception_index' %}" class="btn btn-primary">Ortga</a>
+                        </div>
+                        <hr>
+                        <table class="table table-striped">
+                            <tr>
+                                <td><b>Ismi:</b></td>
+                                <td>{{person.title}}</td>
+                            </tr>
+                            <tr>
+                                <td>Pasport/ID raqami:</td>
+                                <td>{{person.passport}}</td>
+                            </tr>
+                            <tr>
+                                <td>Shirkat:</td>
+                                <td>{{person.company}}</td>
+                            </tr>
+                            <tr>
+                                <td>Anjomlari:</td>
+                                <td style="font-size: 14px;">{{person.tools}}</td>
+                            </tr>
+                        </table>
+                        <form action="{% url 'reception_create_session' %}" method="post">
+                            <table class="table table-striped mt-2">
+                                <tr>
+                                    <th></th>
+                                    <th>Dastur raqami</th>
+                                    <th>Muddat boshi</th>
+                                    <th>Muddat oxiri</th>
+                                    <th>Anjomlari</th>          
+                                </tr>
+                                
+                                {% for d in person.dpl_set.all %}
+                                <tr>
+                                    <td><input type="radio" class="form-check-input" name="dastur" value="{{d.dastur.id}}" id="dt{{d.dastur.id}}" checked></td>
+                                    <td><label for="dt{{d.dastur.id}}">{{d.dastur.title}}</label>  
+                                        {% if d.dastur.is_date_expired %}
+                                        <span class="badge bg-danger">Eskirgan</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Aktiv</span>
+                                        {% endif %}</td>
+                                    <td>{{d.dastur.date_start}}</td>
+                                    <td>{{d.dastur.date_end}}</td>
+                                    <td style="font-size: 14px;">{{d.dastur.tools}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        
+                        
+                            {% csrf_token %}
+                            <input type="hidden" name="image" id="webPhoto" required>
+                            <input type="hidden" name="id" value="{{person.id}}">
+                            <button type="button" class="open_camera btn btn-primary mt-2 d-flex align-items-center">
+                                Veb kamera
+                                <span class="mx-1"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                                    <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
+                                    <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                  </svg>
+                            </button>
+                            <style>
+                                video {width: 400px !important;}
+                                video::after {content: ""; display: block; height: 2px; width: 100%; position: relative;}
+                                #CAMERA button {
+                                    padding: 10px 15px;
+                                    border-radius: 3px;
+                                    border: none;
+                                    background-color: #5cb85c;
+                                    color: white;
+                                }
+                            </style>
+                            <div id="CAMERA" class="my-2"></div>
+                            <button type="submit" class="btn btn-success d-none" id="btn_sender">Kirishga ruxsat berish uchun tugmani bosing</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card card-body">
+                        <h3>Obyektda bo‘lgan:</h3>
+                        <hr>
+                        <ul class="list-group">
+                            {% for i in person.entry_set.all %}
+                            {% if request.user.account.branch.id == i.branch.id %}
+                            <li class="list-group-item"> {{i.date_start}} - {{i.date_finish}}
+                            </li> 
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let openCamera = document.querySelector('.open_camera')
+        let cameraBlock = document.querySelector('#CAMERA')
+openCamera.addEventListener('click', ()=> {
+    // Получение доступа к веб-камере
+const constraints = {
+    video: true
+  }; 
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(mediaStream) {
+      const video = document.createElement('video');
+      video.srcObject = mediaStream;
+      cameraBlock.appendChild(video);
+
+      // Ожидание, чтобы камера успела инициализироваться
+      video.onloadedmetadata = function(e) {
+        video.play();
+        openCamera.classList.add('d-none')
+        cameraBlock.querySelectorAll('img').forEach(item => item.remove())
+      };
+
+      // Создание холста для отображения видеопотока
+      const canvas = document.createElement('canvas');
+      canvas.style.height = '1px'
+      cameraBlock.appendChild(canvas);
+      
+      // Кнопка для съемки фотографии
+      const captureButton = document.createElement('button');
+      captureButton.textContent = 'Rasmga olish';
+      
+      cameraBlock.appendChild(captureButton);
+      
+      captureButton.addEventListener('click', function() {
+        // Установка размеров холста равными размерам видеопотока
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Рисование кадра видео на холсте
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Получение URL снимка в формате Data URL
+        const photoDataURL = canvas.toDataURL('image/png');
+        
+        // Создание элемента изображения для отображения снимка
+        const photoImage = document.createElement('img');
+        photoImage.src = photoDataURL;
+        document.querySelector('#webPhoto').value = photoDataURL
+        cameraBlock.appendChild(photoImage);
+        document.querySelector('#btn_sender').classList.remove('d-none')
+        
+        // Остановка видеопотока
+        mediaStream.getTracks().forEach(track => track.stop());
+        openCamera.classList.remove('d-none')
+        
+        // Удаление элементов, связанных с видео
+        cameraBlock.removeChild(video);
+        cameraBlock.removeChild(canvas);
+        cameraBlock.removeChild(captureButton);
+      });
+    })
+    .catch(function(err) {
+      console.error('Kameraga ulanishda xatolik mavjud:', err);
+    });
+})
+    </script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <script>
+        setInterval(function() {
+          window.location.reload();
+        }, 3600000); 
+      </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script> -->
+</body>
+</html>

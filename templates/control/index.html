@@ -1,0 +1,150 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Sessiyalar {% endblock title %}
+
+{% block content %}
+
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-6">
+            <div class="card card-body">
+                <h3 class="mb-0">Aktiv sessiyalar - {{ active_sessions | length}}</h3>
+                <hr>
+                {% for s in active_sessions %}
+                    <div class="alert alert-light" style="position: relative;">
+                        <p class="lead mb-0">
+                            <b>Kirgan vaqti:</b>
+                            {{s.date_start}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>F.I.Sh.:</b>
+                            {% if s.guest %}
+                            {{s.info.title}}
+                            {% else %}
+                            {{s.person.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Fuqaroligi:</b>
+                            {% if s.guest %}
+                            {{s.info.citizenship}} {{s.info.passport}}
+                            {% else %}
+                            {{s.person.country.title}} {{s.person.passport}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Tashrif joyi:</b>
+                            {% if s.guest %}
+                            {{s.info.room}}
+                            {% else %}
+                            {{ s.person.room }}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Kirgan dastur raqami:</b>
+                            {% if s.guest %}
+                            Mehmon
+                            {% else %}
+                            {{s.dastur.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Shirkat:</b>
+                            {% if s.guest %}
+                            {{s.info.company}}
+                            {% else %}
+                            {{s.person.company.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Eslatma:</b>
+                            {% if s.guest %}
+                            {{s.info.room}}
+                            {% else %}
+                            {{s.person.tools}}
+                            {% endif %}
+                        </p>
+                            <a style="position: absolute; right: 0px; top: 0px; " href="{{s.photo.url}}" target="_blank">
+                            <img src="{{s.photo.url}}" alt="" width="250">
+                            </a>
+                            
+                        {% for d in s.person.dpl_set.all %}
+                                <small class="d-block mb-0">
+                                    <b>{{d.dastur.title}}-dastur anjomlari:</b>
+                                    <small>{{d.dastur.tools}}</small>
+                                </small>
+                        {% endfor %}
+                        
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card card-body">
+                <h3 class="mb-0">Kirganlar tarixi - {{history_sessions | length }}</h3>
+                <hr>
+                {% for s in history_sessions %}
+                    <div class="alert alert-light" style="position: relative;">
+                        <p class="lead mb-0">
+                            <b>Kirgan vaqti:</b>
+                            {{s.date_start}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Chiqqan vaqti:</b>
+                            {{s.date_finish}}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>F.I.Sh.</b>
+                            {% if s.guest %}
+                            {{s.info.title}}
+                            {% else %}
+                            {{s.person.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Shirkat:</b>
+                            {% if s.guest %}
+                            {{s.info.company}}
+                            {% else %}
+                            {{s.person.company.title}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Eslatma:</b>
+                            {% if s.guest %}
+                            {{s.info.room }}
+                            {% else %}
+                            {{s.person.tools}}
+                            {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Fuqaroligi:</b>
+                            {% if s.guest %}
+                            {{s.info.country}} {{s.info.passport}}
+                            {% else %}
+                            {{s.person.country.title}} {{s.person.passport}}
+                            {% endif %}
+                        </p>
+                        {% for d in s.person.dpl_set.all %}
+                            <p class="lead mb-0">
+                                <b><a href="{% url 'control_dastur_detail' d.dastur.id %}">{{d.dastur.title}}</a>-dastur anjomlari:</b>
+                                <small>{{d.dastur.tools}}</small>
+                            </p>
+                        {% endfor %}
+                        <a style="position: absolute; right: 0px; top: 0px; " href="{{s.photo.url}}" target="_blank">
+                            <img src="{{s.photo.url}}" alt="" width="250">
+                        </a>
+                        {% for i in s.toolsimage_set.all %}
+                            <a href="{{i.image.url}}" target="_blank">
+                            <img src="{{i.image.url}}" alt="" width="100">
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

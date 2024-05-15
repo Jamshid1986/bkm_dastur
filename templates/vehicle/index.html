@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}"">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
+    <title>Avtoulovlar</title>
+    <style>
+        .navbar-nav a {
+            border-bottom: 2px solid transparent;
+        }
+        .navbar-nav .current {
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+        }
+        li .active {
+            background-color: #01b4ff !important; color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">{{request.user.account.branch.title}}</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link" href="{% url 'login_logout' %}">Chiqish</a>
+            </div>
+          </div>
+        </div>
+    </nav>
+
+    <div class=" ">
+        <div class="container-fluid">
+            {{request.user.first_name}}
+            <div class="row mt-5">
+                <div class="col-6">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" id="btnsearchbyperson">Person</a>
+                          </li>
+                        <li class="nav-item">
+                          <a class="nav-link" aria-current="page" href="#" id="btnsearchbydastur">Dastur</a>
+                        </li>
+                       
+                        <li class="nav-item">
+                            <a href="{% url 'reception_guest' %}" class="nav-link">
+                                Mehmon
+                            </a>
+                        </li>
+                      </ul>
+                    <div class="card card-body">
+                        <form action="{% url 'reception_index' %}" method="get" id="searchbyperson">
+                        
+                            <div class="row g-2">
+                                <div class="col-10">
+                                    <input type="text" class="form-control form-control-lg" list="persons_list" name="search" minlength="3" placeholder="izlash uchun kamida 3 ta belgi kiriting">
+                                </div>
+                                <div class="col-2">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 d-flex justify-content-between align-items-center">
+                                        <svg viewBox="0 0 50 50" width="30px" height="30px" fill="white"><path d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"/></svg> <span class="mx-1"></span> Izlash 
+                                    </button>
+                                </div>
+                                
+                            </div>
+                        </form>
+                        <form action="{% url 'reception_index' %}" method="get" id="searchbydastur" class="d-none">
+                        
+                            <div class="row g-2">
+                                <div class="col-10">
+                                    <input type="text" class="form-control form-control-lg" list="persons_list" name="dastur" placeholder="dastur raqamini kiriting!">
+                                </div>
+                                <div class="col-2">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 d-flex justify-content-between align-items-center">
+                                        <svg viewBox="0 0 50 50" width="30px" height="30px" fill="white"><path d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"/></svg> <span class="mx-1"></span> Izlash 
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        {% if odamlar %}
+                        <p class="lead mt-3"> <b>Mos natijalar: {{odamlar|length}} ta personal</b> </p>
+                        <table class="table table-striped mt-1">
+                            {% for r in odamlar %}
+                            {% if r.id not in aktivlar %}
+                            <tr>
+                                <td>{{r.title}}</td>
+                                <td>{{r.company}}</td>
+                                <td>{{r.passport}}</td>
+                                <td>
+                                    <form action="{% url 'reception_detail' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="pid" value="{{r.id}}">
+                                        <button type="submit" class="btn btn-sm btn-primary">Ochish</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <p class="lead mt-3">Mos natijalar topilmadi!</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card card-body">
+                        <h3>Hududda mavjud ijarachi va mehmonlar - {{entries.count}}</h3>
+                        <hr>
+                        <ul class="list-group">
+                            {% for s in entries %}
+                            
+                            <div class="alert alert-light" style="position: relative;">
+                                <p class="lead mb-0">
+                                    <b>Kirgan vaqti:</b>
+                                    {{s.date_start}}
+                                </p>
+                                <p class="lead mb-0">
+                                    <b>F.I.Sh.:</b>
+                                    {% if s.guest %}
+                                    {{s.info.title}}
+                                    {% else %}
+                                    {{s.person.title}}
+                                    {% endif %}
+                                </p>
+                                <p class="lead mb-0">
+                                    <b>Shirkat:</b>
+                                    {% if s.guest %}
+                                    {{s.info.company}}
+                                    {% else %}
+                                    {{s.person.company.title}}
+                                    {% endif %}
+                                </p>
+                                <p class="lead mb-0">
+                                    <b>Fuqaroligi:</b>
+                                    {% if s.guest %}
+                                    {{s.info.citizenship}}
+                                    {% else %}
+                                    {{s.person.country.title}} {{s.person.passport}}
+                                    {% endif %}
+                                    
+                                </p>
+                                <p class="lead mb-0">
+                                    <b>Anjomlari:</b>
+                                    {% if s.guest %}
+                                    <small>{{s.info.tools}}</small>
+                                    {% else %}
+                                    <small>{{s.person.tools}}</small>
+                                    {% endif %}
+                                </p>
+                                
+                                <p class="lead mb-0">
+                                    <b>Kirgan dastur raqami:</b>
+                                    {% if s.guest %}
+                                    Mehmon
+                                    {% else %}
+                                        {{s.dastur.title}}
+                                    {% endif %}
+                                </p>
+                                {% for d in s.person.dpl_set.all %}
+                                <small class="d-block mb-0">
+                                    <b>{{d.dastur.title}}-dastur anjomlari:</b>
+                                    <small>{{d.dastur.tools}}</small>
+                                </small>
+                                {% endfor %}
+                                    <a style="position: absolute; right: 0px; top: 0px; " href="{{s.photo.url}}" target="_blank">
+                                        <img src="{{s.photo.url}}" alt="" width="170">
+                                    </a>
+                                    <button data-bs-target="#modal-R{{s.id}}" data-bs-toggle="modal" class="btn btn-danger mt-2">Chiqarib yuborish</button>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% for i in entries %}  
+    <div class="modal" id="modal-R{{i.id}}" tabindex="-1">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'reception_delete_session' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title"> "{{i.person.title}}"ni Obyektdan chiqarib yuborish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="{{i.id}}">
+                    <p>"{{i.person.title}}" haqiqatan ham Obyektdan chiqqanmi? O‘chirib yuborilgach, ma'lumotlar qaytadan rasmiylashtiriladi</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-danger">Chiqarib yuborish</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+{% endfor %}
+    <script src="{% static 'bootstrap.min.js' %}""></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script> -->
+    <script>
+        let btnsearchbydastur = document.querySelector("#btnsearchbydastur")
+        let btnsearchbyperson = document.querySelector("#btnsearchbyperson")
+        let searchbydastur = document.querySelector("#searchbydastur")
+        let searchbyperson = document.querySelector("#searchbyperson")
+
+        btnsearchbydastur.addEventListener("click", ()=>{
+            searchbydastur.classList.remove("d-none")
+            searchbyperson.classList.add("d-none")
+            btnsearchbydastur.classList.add("active")
+            btnsearchbyperson.classList.remove("active")
+        })
+        btnsearchbyperson.addEventListener("click", ()=>{
+            searchbydastur.classList.add("d-none")
+            searchbyperson.classList.remove("d-none")
+            btnsearchbydastur.classList.remove("active")
+            btnsearchbyperson.classList.add("active")
+        })
+    </script>
+</body>
+</html>

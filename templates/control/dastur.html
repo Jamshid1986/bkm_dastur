@@ -1,0 +1,128 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Dasturlar {% endblock title %}
+
+{% block content %}
+    <div class="container-fluid mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Barcha dasturlar - {{dasturs | length}}</h5>
+                <input type="text" class="form-control w-25" placeholder="Izlash" id="search"> <!-- izlash maydonchasi-->
+                <button class="btn btn-success" data-bs-target="#modal-C" data-bs-toggle="modal">Qo‘shish</button>
+            </div>
+              <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Dastur raqami</th>
+                        <th>Shirkat nomi</th>
+                        <th>Obyekt/Filial</th>
+                        <th>Muddat boshi</th>
+                        <th>Muddat yakuni</th>
+                        <th>Dasturdagi personallar soni</th>
+                        <th></th>
+                    </tr>   
+                        {% for c in dasturs %}
+                    <tr class="tr" data-name="{{c.company.title}} {{c.title}}"> <!-- izlash company.title bo'yicha amalga oshadi-->
+                        <td>{{c.title}}
+                          {% if c.is_date_expired %}
+                          <span class="badge bg-danger">Eskirgan</span>
+                          {% else %}
+                          <span class="badge bg-success">Aktiv</span>
+                          {% endif %}
+                        </td>
+                        <td>{{c.company.title}}</td>
+
+                        <td>
+                          {% for b in c.branch.all %}
+                            {{b.title}},
+                          {% endfor %}
+                        </td>
+                        <td>{{c.date_start}}</td>
+                        <td>{{c.date_end}}</td>
+                        <td>{{c.get_count_person}}</td>
+                        <td>
+                            <a href="{% url 'control_dastur_detail' c.id %}" class="btn btn-dark btn-sm">Batafsil</a>
+                        </td>
+                    </tr>
+                        {% endfor %}     
+                </table>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="modal" id="modal-C" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_dastur_create' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Yangi dasturni qo‘shish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Dastur raqami</label>
+                    <input type="text" class="form-control mb-2" required name="title">
+                    <label for="">Shirkat</label>
+                    <select class="form-select mb-2" required name="shirkat_id">
+                        {% for c in companies %}
+                            <option value="{{c.id}}">
+                                {{c.title}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <label for="">Muddat boshlanishi</label>
+                    <input type="date" name="date_start" id="" class="form-control mb-2" required>
+                    <label for="">Muddat tugashi</label>
+                    <input type="date" name="date_end" id="" class="form-control mb-2" required>
+                    <label for="">Anjomlar</label>
+                    <textarea name="tools" id="" rows="3" class="form-control"></textarea>
+                    <label for="">Fayl</label>
+                    <input type="file" class="form-control mb-2" name="file">
+                    <label>Obyekt/Filial</label>
+                    {% for b in branches %}
+                    <div>
+                      <input type="checkbox" name="branch" id="b{{b.id}}" value="{{b.id}}"> <label for="b{{b.id}}">{{b.title}}</label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Qo‘shish</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function filterRows(inputValue) {
+      if (inputValue.length < 3) {
+          document.querySelectorAll('.tr').forEach(function(row) {
+              row.style.display = '';
+          });
+          return;
+      }
+  
+      var lowerInputValue = inputValue.toLowerCase();
+  
+      document.querySelectorAll('.tr').forEach(function(row) {
+          // Используем dataset для доступа к data-name
+          var dataName = row.dataset.name;
+  
+          if (dataName && dataName.toLowerCase().includes(lowerInputValue)) {
+              row.style.display = '';
+          } else {
+              row.style.display = 'none';
+          }
+      });
+  }
+  
+  // Пример использования с обработчиком событий для текстового поля
+  document.getElementById("search").addEventListener('input', function() {
+      filterRows(this.value);
+  });
+      </script>
+
+{% endblock content %}
+

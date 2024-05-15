@@ -1,0 +1,113 @@
+{% extends 'control/base.html' %}
+
+{% block title %} Avtoulovlar {% endblock title %}
+
+{% block content %}
+    <div class="container-fluid mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Barcha avtoulovlar - {{vehicles | length}}</h4>
+                <button class="btn btn-success" data-bs-target="#modal-C" data-bs-toggle="modal">Qo‘shish</button>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                       
+                        <th>Avtoulov rusumi</th>
+                        <th>Avtoulov modeli</th>
+                        <th>Davlat raqami</th>
+                        <th>Shirkat</th>
+                        <th>Dastur raqami</th>
+                        <th>Haydovchi</th>
+                        <th></th>
+                    </tr>   
+                        {% for c in vehicles %}
+                    <tr>
+                        <td>{{c.title}}</td>
+                        <td>{{c.model}}</td>
+                        <td>{{c.numberplate}}</td>
+                        <td>{{c.dastur.company}}</td>
+                        <td>{{c.dastur}}</td>
+                        <td>{{c.person}}</td>
+                        <td>
+                            <button data-bs-target="#modal-E{{c.id}}" data-bs-toggle="modal" class="btn btn-warning btn-sm">Tahrirlash</button>
+                            <button data-bs-target="#modal-D{{c.id}}" data-bs-toggle="modal" class="btn btn-danger btn-sm">O‘chirish</button>
+                        </td>
+                    </tr>
+                        {% endfor %}     
+                </table>
+            </div>
+        </div> 
+    </div>
+    <div class="modal" id="modal-C" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_company_create'%}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Yangi shirkat qo‘shish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Title</label>
+                    <input type="text" class="form-control mb-2" required name="title">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Qo‘shish</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% for i in companies %}  
+        <div class="modal" id="modal-D{{i.id}}" tabindex="-1">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'control_company_delete'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Shirkatni o‘chirish "{{i.title}}"</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="{{i.id}}">
+                        <p>Siz haqiqatan ham o‘chirib yubormoqchimisiz? O‘chirib yuborilgan ma'lumotlar qayta tiklanmaydi!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                        <button type="submit" class="btn btn-danger">O‘chirish</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% for i in companies %} 
+    <div class="modal" id="modal-E{{i.id}}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="{% url 'control_company_edit'%}"  method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Shirkatni tahrirlash {{i.title}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Title</label>
+                    <input type="text" class="form-control mb-2" required name="title" value="{{i.title}}">
+                    <input type="hidden" name="id" value="{{i.id}}">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    {% endfor %}
+{% endblock content %}
