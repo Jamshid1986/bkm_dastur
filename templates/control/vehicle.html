@@ -42,15 +42,31 @@
     <div class="modal" id="modal-C" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
-            <form action="{% url 'control_company_create'%}" method="POST">
+            <form action="" method="POST">
                 {% csrf_token %}
                 <div class="modal-header">
-                    <h5 class="modal-title">Yangi shirkat qo‘shish</h5>
+                    <h5 class="modal-title">Yangi avtoulov qo‘shish</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <label for="">Title</label>
+                    <label for="">Markasi</label>
                     <input type="text" class="form-control mb-2" required name="title">
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Modifikatsiyasi</label>
+                    <input type="text" class="form-control mb-2" required name="title">
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Davlat raqami</label>
+                    <input type="text" class="form-control mb-2" required name="title">
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Dastur raqami</label>
+                    <select type="text" class="form-select mb-2" required name="title"></select>
+                  </div>
+                  <div class="modal-body">
+                    <label for="">Haydovchi</label>
+                    <select type="text" class="form-control mb-2" required name="title"></select>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
