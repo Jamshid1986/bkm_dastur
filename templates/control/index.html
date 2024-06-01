@@ -111,12 +111,16 @@
                             {% endif %}
                         </p>
                         <p class="lead mb-0">
-                            <b>Eslatma:</b>
+                            <b>Tashrif joyi:</b>
                             {% if s.guest %}
-                            {{s.info.room }}
+                            {{s.info.room}}
                             {% else %}
-                            {{s.person.tools}}
+                            {{ s.person.room }}
                             {% endif %}
+                        </p>
+                        <p class="lead mb-0">
+                            <b>Eslatma:</b>
+                            {{s.person.tools}}
                         </p>
                         <p class="lead mb-0">
                             <b>Fuqaroligi:</b>

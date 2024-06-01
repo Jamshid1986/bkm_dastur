@@ -152,7 +152,14 @@
                                     <small>{{s.person.tools}}</small>
                                     {% endif %}
                                 </p>
-                                
+                                <p class="lead mb-0">
+                                    <b>Tashrif joyi:</b>
+                                    {% if s.guest %}
+                                    {{s.info.room}}
+                                    {% else %}
+                                    {{ s.person.room }}
+                                    {% endif %}
+                                </p>
                                 <p class="lead mb-0">
                                     <b>Kirgan dastur raqami:</b>
                                     {% if s.guest %}
