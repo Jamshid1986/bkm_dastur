@@ -120,11 +120,15 @@ from django.core.paginator import Paginator
 def control_personal(request):
     if request.user.last_name not in ["100", "400"]: return redirect('login_index')
     persons = Person.objects.filter(available=True)
+    persons_length = persons.count()
     countries = Country.objects.all()
     companies = Company.objects.filter(available=True)
     try: code = request.build_absolute_uri().split('?')[1]
     except: code = None
-    data = {"persons":persons, "countries":countries, "companies":companies, "code":code}
+    paginator = Paginator(persons, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    data = {"page_obj":page_obj, "countries":countries, "companies":companies, "code":code, "person_length":persons_length}
     
     return render(request, "control/personal.html", context=data)
 
