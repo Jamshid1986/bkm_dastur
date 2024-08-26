@@ -112,8 +112,9 @@ def control_company_edit(request):
 
 
 #####################################################
-# Operators
+# Personallar
 ####################################################
+from django.core.paginator import Paginator
 
 @login_required(login_url="login_index")
 def control_personal(request):
