@@ -128,7 +128,7 @@ def control_personal(request):
     paginator = Paginator(persons, 50)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    data = {"page_obj":page_obj, "countries":countries, "companies":companies, "code":code, "person_length":persons_length}
+    data = {"page_obj":page_obj, "countries":countries, "companies":companies, "code":code, "persons_length":persons_length}
     
     return render(request, "control/personal.html", context=data)
 
