@@ -86,7 +86,7 @@
                         <th>Anjomlari</th>
                         <th></th>
                     </tr>   
-                        {% for p in persons %}
+                        {% for p in page_obj %}
                     <tr class="tr" data-name="{{p.title}} {{p.company.title}} {{p.passport}}">
                         <td></td>
                         <td>{{p.title}}</td>
