@@ -5,12 +5,25 @@
 {% block content %}
     <div class="container-fluid mt-5">
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Barcha personallar - {{persons_length}}</h5>
-            <input type="text" class="form-control w-25" placeholder="Izlash" id="search">
+        <form action="{% url 'control_personal' %}" method="get" id="searchbyperson">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+            {% if odamlar %}
+            <h5 class="m-b-10">Barcha natijalar - {{odamlar_length}}</h5>
+            <p class="text-muted m-b-10">Barcha filiallar bo‘yicha dasturlar</p>
+            {% else %}
+            <h5 class="m-b-10">Barcha personallar - {{persons_length}}</h5>
+            <p class="text-muted m-b-10">Barcha filiallar bo‘yicha dasturlar</p>
+            {% endif %}
+            </div>
+            <div class="d-flex justify-content-around">
+              <input type="text" class="form-control w-35 align-items-center" placeholder="Izlash shu yerga matn kiriting" required name="search" list="persons_list" minlength="3"> <!-- izlash maydonchasi-->
+              <button class="btn btn-primary" type="submit" id="searchbyperson">Izlash</button>  
+            </div>  
               <button class="btn btn-success" data-bs-target="#modal-C" data-bs-toggle="modal">Qo‘shish</button>
-                </div>
-            <div class="card-body">
+            </form>
+          </div>
+          <div class="card-body">
               {% if code == 'exists' %}
               <div class="alert alert-danger">
                 Bunday shaxs allaqachon mavjud!
@@ -111,8 +124,8 @@
                     </tr>
                         {% endfor %}     
                 </table>
-              </div>      
-        </div>
+        </div>      
+      </div>
     </div>
 
     <div class="modal" id="modal-C" tabindex="-1">

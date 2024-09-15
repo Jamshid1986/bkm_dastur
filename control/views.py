@@ -119,7 +119,12 @@ from django.core.paginator import Paginator
 @login_required(login_url="login_index")
 def control_personal(request):
     if request.user.last_name not in ["100", "400"]: return redirect('login_index')
-    persons = Person.objects.filter(available=True)
+    if request.GET.get("search"):
+         persons = Person.objects.filter((Q(title__icontains = request.GET.get("search")) | 
+         Q(company__title__icontains = request.GET.get("search")) | 
+         Q(passport__icontains = request.GET.get("search")) & Q(available=True)))
+    else:
+        persons = Person.objects.filter(available=True)
     persons_length = persons.count()
     countries = Country.objects.all()
     companies = Company.objects.filter(available=True)
@@ -129,10 +134,7 @@ def control_personal(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     data = {"page_obj":page_obj, "countries":countries, "companies":companies, "code":code, "persons_length":persons_length}
-    
     return render(request, "control/personal.html", context=data)
-
-
 
 @login_required(login_url="login_index")
 def control_personal_create(request):
