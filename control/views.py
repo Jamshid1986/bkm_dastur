@@ -166,7 +166,6 @@ def control_personal_delete(request):
         p.save()
         return redirect("control_personal")
     
-
 @login_required(login_url="login_index")
 def control_personal_edit(request):
     if request.user.last_name not in ["100", "400"]: return redirect('login_index')

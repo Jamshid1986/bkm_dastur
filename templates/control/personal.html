@@ -175,8 +175,8 @@
         </div>
       </div>
 
-    {% for i in persons %}  
-        <div class="modal" id="modal-D{{i.id}}" tabindex="-1">
+    {% for i in page_obj %}  
+        <div class="modal fade" id="modal-D{{i.id}}" tabindex="-1">
             <div class="modal-dialog">
             <div class="modal-content">
                 <form action="{% url 'control_personal_delete'%}" method="POST">
@@ -199,17 +199,17 @@
         </div>
     {% endfor %}
 
-    {% for i in persons %} 
-    <div class="modal" id="modal-E{{i.id}}" tabindex="-1">
+    {% for i in page_obj %} 
+    <div class="modal fade" id="modal-E{{i.id}}" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form action="{% url 'control_personal_edit'%}" method="POST">
+          <form action="{% url 'control_personal_edit' %}" method="POST">
               {% csrf_token %}
               <div class="modal-header">
                   <h5 class="modal-title">Personalni tahrirlash</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+              </div>
+              <div class="modal-body">
                   <input type="hidden" name="id" value="{{i.id}}">
                   <label for="">Ism-sharifi</label>
                   <input type="text" class="form-control mb-2" required name="title" value="{{i.title}}">
@@ -238,17 +238,17 @@
                   <!-- <input type="text" class="form-control mb-2" required name="room" value="{{i.room}}"> -->
                   <label for="">Eslatma</label>
                   <textarea name="tools" id="" rows="3" class="form-control">{{i.tools}}</textarea>
-                </div>
-                <div class="modal-footer">
+              </div>
+              <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
-                  <button type="submit" class="btn btn-success">Tahrirlash</button>
-                </div>
+                  <button type="submit" class="btn btn-success">Saqlash</button>
+              </div>
           </form>
         </div>
       </div>
     </div>
     {% endfor %}
-    <script>
+    <!-- <script>
       function filterRows(inputValue) {
     if (inputValue.length < 3) {
         document.querySelectorAll('.tr').forEach(function(row) {
@@ -275,6 +275,6 @@
 document.getElementById("search").addEventListener('input', function() {
     filterRows(this.value);
 });
-    </script>
+    </script> -->
 {% endblock content %}
 
