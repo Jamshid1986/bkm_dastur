@@ -326,10 +326,12 @@ def control_to_excel(request):
     workbook = Workbook()
     worksheet = workbook.active
     worksheet.title = "arxiv"
+    
+    # Set column widths
     worksheet.column_dimensions["C"].width=10
     worksheet.column_dimensions["H"].width=60
     worksheet.column_dimensions["D"].width=35
-    worksheet.column_dimensions["E"].width=15
+    worksheet.column_dimensions["E"].width=20
     worksheet.column_dimensions["F"].width=100
     worksheet.column_dimensions["G"].width=10
     worksheet.column_dimensions["K"].width=12
@@ -343,12 +345,32 @@ def control_to_excel(request):
                "Dastur", "Holati","Eslatma", "Kirgan sanasi", "Chiqqan sanasi", "Resepshnchi", "Ruxsat beruvchi", "Anjomlari"]
     worksheet.append(columns)
     c = 1
+    
     for i in sessions:
-        if i.guest:
-            worksheet.append([c,0, str(i.branch),i.info.title, i.info.passport, "https://10.200.203.6:8030"+i.photo.url, i.info.citizenship.title, i.info.company, "mehmon", "Aktiv",i.info.room, str(i.date_start_current()), str(i.date_finish_current()), i.user.first_name, i.info.permited_by,i.info.tools])
-        else:    
-            worksheet.append([c,i.person.id, str(i.branch) ,i.person.title, i.person.passport, "https://10.200.203.6:8030"+i.photo.url, i.person.country.title, i.person.company.title, str(i.dastur), "Eskirgan" if i.dastur.is_date_expired() else "Aktiv","joyi", str(i.date_start_current()), str(i.date_finish_current()), i.user.first_name, "Dastur asosida",i.person.tools])
-        c = c + 1
+        try:
+            if i.guest:
+                worksheet.append([
+                    c, 0, str(i.branch), i.info.title, i.info.passport, 
+                    "https://10.200.203.6:8030"+i.photo.url, i.info.citizenship.title, 
+                    i.info.company, "mehmon", "Aktiv", i.info.room, 
+                    str(i.date_start_current()), str(i.date_finish_current()), 
+                    i.user.first_name, i.info.permited_by, i.info.tools
+                ])
+            else:    
+                worksheet.append([
+                    c, i.person.id, str(i.branch), i.person.title, i.person.passport, 
+                    "https://10.200.203.6:8030"+i.photo.url, i.person.country.title, 
+                    i.person.company.title, str(i.dastur), 
+                    "Eskirgan" if i.dastur and i.dastur.is_date_expired() else "Aktiv",
+                    i.person.room if hasattr(i.person, 'room') else "", 
+                    str(i.date_start_current()), str(i.date_finish_current()), 
+                    i.user.first_name, "Dastur asosida", i.person.tools
+                ])
+            c += 1
+        except Exception as e:
+            # Skip problematic entries but continue processing
+            print(f"Error processing entry {i.id}: {str(e)}")
+            continue
     
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = "attachment; filename=myfile.xlsx"

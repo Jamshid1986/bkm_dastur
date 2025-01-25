@@ -128,8 +128,11 @@ class Dastur(models.Model):
         return self.date_end.strftime("%Y-%m-%d")
     def get_count_person(self):
         return self.dpl_set.all().count()
+    
     def is_date_expired(self):
-        return date.today() > self.date_end
+        try:
+            return date.today() > self.date_end
+        except: return ""
     
     class Meta:
         ordering = ("-id",)
