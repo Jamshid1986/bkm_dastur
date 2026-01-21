@@ -135,7 +135,7 @@ class Dastur(models.Model):
         except: return ""
     
     class Meta:
-        ordering = ("-id",)
+        ordering = ("-title",)
 
     def __str__(self):
         return str(self.title)
